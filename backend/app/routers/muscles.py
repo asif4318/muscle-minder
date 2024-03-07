@@ -1,11 +1,9 @@
 from routers.models.muscle import Muscle
-from engine_singleton import EngineSingleton
+from utilities import engine
 from sqlmodel import Session, select
 from fastapi import APIRouter
 
 router = APIRouter(prefix="/muscles")
-
-engine = EngineSingleton()
 
 
 @router.post("")

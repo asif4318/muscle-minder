@@ -1,11 +1,9 @@
 from routers.models.user import User
-from engine_singleton import EngineSingleton
+from utilities import engine
 from sqlmodel import Session, select
 from fastapi import APIRouter
 
 router = APIRouter(prefix="/users")
-
-engine = EngineSingleton()
 
 
 @router.post("")

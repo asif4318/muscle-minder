@@ -1,11 +1,9 @@
 from routers.models.excercise import Excercise
-from engine_singleton import EngineSingleton
+from utilities import engine
 from sqlmodel import Session, select
 from fastapi import APIRouter
 
 router = APIRouter(prefix="/excercises")
-
-engine = EngineSingleton()
 
 
 @router.post("")

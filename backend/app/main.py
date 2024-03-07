@@ -1,16 +1,14 @@
 from typing import Optional
-from engine_singleton import EngineSingleton
+from utilities import engine
 
 # One line of FastAPI imports here later 👈
 from fastapi import FastAPI
 from sqlmodel import SQLModel
 from routers import users, muscles, excercises
 
-engine = EngineSingleton()
-
 
 def create_db_and_tables():
-    SQLModel.metadata.create_all(engine.engine)
+    SQLModel.metadata.create_all(engine)
 
 
 app = FastAPI()
