@@ -39,5 +39,5 @@ def create_user(user: User):
 @app.get("/users/")
 def read_users():
     with Session(engine) as session:
-        heroes = session.exec(select(User)).all()
-        return heroes
+        users = session.exec(select(User)).all()
+        return users
