@@ -1,4 +1,5 @@
-from routers.models.excercise import Excercise
+from typing import List
+from routers.models.exercise_muscle_link import Excercise, Muscle
 from utilities import engine
 from sqlmodel import Session, select
 from fastapi import APIRouter
@@ -7,9 +8,10 @@ router = APIRouter(prefix="/excercises")
 
 
 @router.post("")
-def create_excercise(excercise: Excercise):
+def create_excercise(excercise: Excercise, muscles: List[Muscle]):
     '''Create Excercise'''
     with Session(engine.engine) as session:
+        excercise.muscles = muscles
         session.add(excercise)
         session.commit()
         session.refresh(excercise)

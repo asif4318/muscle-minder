@@ -1,8 +1,12 @@
-from sqlmodel import Field, SQLModel
-from typing import Optional
-from .exercise_muscle_link import ExcerciseMuscleLink
+from sqlmodel import Field, Relationship, SQLModel
+from typing import List, Optional
 
 
-class Muscle(SQLModel, table=True):
+class MuscleBase(SQLModel):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(index=True)
+    category: str = Field(default=None)
+
+
+class MuscleRead(MuscleBase):
+    id: int

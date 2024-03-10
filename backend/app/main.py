@@ -10,6 +10,7 @@ from routers import users, muscles, excercises
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
+    SQLModel.exec
 
 
 # Startup the API and include all of the routers
