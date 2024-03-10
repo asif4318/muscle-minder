@@ -7,3 +7,5 @@ class ExcerciseMuscleLink(SQLModel, table=True):
         default=None, foreign_key="muscle.id", primary_key=True)
     excercise_id: Optional[int] = Field(
         default=None, foreign_key="excercise.id", primary_key=True)
+    instruction_id: Optional[int] = Field(
+        default=None, foreign_key="excercise.id", primary_key=True)
