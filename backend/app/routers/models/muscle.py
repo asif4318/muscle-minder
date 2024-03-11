@@ -1,6 +1,6 @@
 from sqlmodel import Field, SQLModel
 from typing import Optional
-from .exercise_muscle_link import ExcerciseMuscleLink
+from .exercise_muscle_link import ExerciseMuscleLink
 
 
 class Muscle(SQLModel, table=True):
