@@ -4,15 +4,13 @@ import viteLogo from "/vite.svg";
 import "./App.css";
 import Header from "./Header";
 import Content from "./Content";
-import Login from "./login";
+import Login from "./Login";
 
 function App() {
   const [username, setUsername] = useState("");
   return (
     <div>
-      <Header />
-      <Content />
-      <Login />
+      <Header></Header>
     </div>
     // <>
     //   <div>
