@@ -9,8 +9,9 @@ export function Link_Button() {
     if (exercise.instruct.match(/youtube.com/) && (exercise.instruct.startsWith('https://www.youtube.com') || exercise.instruct.startsWith('youtube.com'))) {
       openURL(exercise.instruct) //automatically ignores everything after first word so long as it is the link - above statements should make sure it is a link to youtube
     }
-    else {
-      alert(exercise.instruct) //will pull up a window showing text instructions - needs to be cleaner
+    else { //Opens a window that has the entire instructions printed out - not themed
+      var wnd = window.open("about:blank", "", "_blank");
+      wnd.document.write(exercise.instruct);
     }
 
     return (
