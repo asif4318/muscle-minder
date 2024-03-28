@@ -8,6 +8,7 @@ router = APIRouter(prefix="/excercises")
 
 @router.post("")
 def create_excercise(excercise: Excercise):
+    '''Create Excercise'''
     with Session(engine.engine) as session:
         session.add(excercise)
         session.commit()
