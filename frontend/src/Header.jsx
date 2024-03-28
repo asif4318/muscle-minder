@@ -18,6 +18,8 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
+import { signOut } from "firebase/auth";
+import { auth } from "./firebase_config";
 
 const Links = ["Dashboard", "Projects", "Team"];
 
@@ -87,7 +89,9 @@ export default function Header() {
                 <MenuItem>Link 1</MenuItem>
                 <MenuItem>Link 2</MenuItem>
                 <MenuDivider />
-                <MenuItem>Link 3</MenuItem>
+                <MenuItem onClick={() => signOut(auth)}>
+                  Sign In / Log Out
+                </MenuItem>
               </MenuList>
             </Menu>
           </Flex>
