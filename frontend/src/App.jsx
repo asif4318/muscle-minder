@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import Header from './Header';
-import Content from './Content';
-import Login from './login';
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
+import Header from "./Header";
+import Content from "./Content";
+import Login from "./login";
 
 function App() {
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
   return (
     <div>
       <Header />
@@ -36,7 +36,7 @@ function App() {
     //     Click on the Vite and React logos to learn more
     //   </p>
     // </>
-  )
+  );
 }
 
-export default App
+export default App;
