@@ -25,17 +25,22 @@ const RightBar = () => {
       if (user) {
         setUsername(user.displayName);
         setProfilePic(user.photoURL);
+        setPresentUser(auth.currentUser);
       } else {
         console.log("No User");
         setUsername(null);
+        setPresentUser(null);
       }
     });
   }, []);
   const [userName, setUsername] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
+  const [presentUser, setPresentUser] = useState(null);
 
   return (
     <GridItem bg="purple.400" height="100%" textAlign={"center"}>
+      {presentUser == null ? <></> : 
+      <>
       <Flex textAlign={"center"} align={"center"} gap={"10%"}>
         <Text>{userName}</Text>
         <Image src={profilePic} width={"10%"}></Image>
@@ -47,6 +52,8 @@ const RightBar = () => {
         <Text>45 Minutes Exercised</Text>
         <Text>My Goal</Text>
       </VStack>
+      </>
+      }
     </GridItem>
   );
 };
