@@ -1,4 +1,4 @@
-from routers.models.excercise import Excercise
+from routers.models.tables import Excercise
 from utilities import engine
 from sqlmodel import Session, select
 from fastapi import APIRouter

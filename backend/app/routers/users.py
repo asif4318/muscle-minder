@@ -1,5 +1,5 @@
 from typing import List
-from routers.models.app_user import AppUser, AppUserCreate, AppUserRead
+from routers.models.tables import AppUser, AppUserCreate, AppUserRead
 from utilities import engine
 from sqlmodel import Session, select
 from fastapi import APIRouter

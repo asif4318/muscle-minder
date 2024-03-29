@@ -1,4 +1,4 @@
-from routers.models.muscle import Muscle
+from routers.models.tables import Muscle
 from utilities import engine
 from sqlmodel import Session, select
 from fastapi import APIRouter
