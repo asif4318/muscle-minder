@@ -38,6 +38,10 @@ class Muscle(SQLModel, table=True):
 class Workout(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(index=True)
+    reps: int = Field()
+    sets: int = Field()
+    workoutDate: date = Field()
+
     user_links: list["UserWorkoutLink"] = Relationship(
         back_populates="workout")
     
