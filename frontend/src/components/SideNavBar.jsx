@@ -1,6 +1,7 @@
 import { GridItem, Container, Heading, Button, VStack } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { useNavigate } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase_config";
 
 const SideNavBar = () => {
   return (
@@ -21,7 +22,16 @@ const SideNavBar = () => {
           </Button>
           <Button width={"70%"}>Profile</Button>
         </VStack>
-        <Button leftIcon={<ArrowBackIcon />}>Log Out</Button>
+        <a href="/">
+          <Button
+            leftIcon={<ArrowBackIcon />}
+            onClick={() => {
+              signOut(auth);
+            }}
+          >
+            Log Out
+          </Button>
+        </a>
       </VStack>
     </GridItem>
   );

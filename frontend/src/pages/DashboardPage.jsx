@@ -1,5 +1,13 @@
 import { React } from "react";
-import { Box, Heading, Container, HStack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Heading,
+  Container,
+  HStack,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 
 const StatsContainer = ({ text }) => {
   return (
@@ -16,12 +24,14 @@ const StatsContainer = ({ text }) => {
 const DashboardPage = () => {
   return (
     <Container my={"1%"}>
-      <Heading textAlign={"center"}>Dashboard</Heading>
-      <HStack>
-        <StatsContainer text={"4/5 Days Excercised"} />
-        <StatsContainer text={"45 minutes of Cardio Training"} />
-        <StatsContainer text={"x to complete y"} />
-      </HStack>
+      <VStack space={12}>
+        <Heading textAlign={"center"}>Dashboard</Heading>
+        <Flex gap={"10%"}>
+          <StatsContainer text={"4/5 Days Excercised"} />
+          <StatsContainer text={"45 minutes of Cardio Training"} />
+          <StatsContainer text={"x to complete y"} />
+        </Flex>
+      </VStack>
     </Container>
   );
 };
