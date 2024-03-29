@@ -21,7 +21,10 @@ import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { signOut } from "firebase/auth";
 import { auth } from "./firebase_config";
 
-const Links = ["Dashboard", "Projects", "Team"];
+const Links = [
+  { title: "Dashboard", ref: "/dashboard" },
+  { title: "Settings", ref: "/settings" },
+];
 
 const NavLink = (props) => {
   const { children } = props;
@@ -36,9 +39,9 @@ const NavLink = (props) => {
         textDecoration: "none",
         bg: useColorModeValue("gray.200", "gray.700"),
       }}
-      href={"#"}
+      href={children.ref}
     >
-      {children}
+      {children.title}
     </Box>
   );
 };
