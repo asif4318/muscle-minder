@@ -1,190 +1,35 @@
-/* :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/*
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+# CSS Preset
+## version 1.0.0
 
-  font-synthesis: none;
+A simple CSS preset to enable box-sizing, set some text rendering options to decrease the differences between browsers, and set a couple of nice defaults.
+
+## Usage
+
+    <link href=preset.css rel=stylesheet>
+
+## Info
+
+- author: Tommy Hodgins
+- license: MIT
+- website: https://github.com/tomhodgins/preset
+
+*/
+
+* {
+  box-sizing: border-box;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-.App {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; 
-  width: 100%; 
-  max-width: 500px;
-  border: 1px solid mediumblue;
-  margin: auto;
-}
-header {
-  width: 100%;
-  padding: 0 0.25em;
-  background-color: mediumblue;
-  color: aliceblue;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-} */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  
+  font-kerning: auto;
 }
 
 html {
-  font-size: 22px;
+  font-family: sans-serif;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  min-height: 100vh;
-  font-family: 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.App {
-  align-content: flex-start;
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; 
-  width: 100%; 
-  max-width: 100%;
-}
-
-.Header {
-  width: 100%;
-  background-color: mediumblue;
-  color: aliceblue;
-  display: flex;
-  justify-content: space-between;
-  align-items: left;
-}
-
-main {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  justify-content: center;
-  align-content: center;
-  overflow-y: auto;
-  font-size: 7vh;
-  margin-top: 10vh;
-}
-
-footer {
-  width: 100%;
-  padding: 0.25em;
-  background-color: mediumblue;
-  color: aliceblue;
-  display: grid;
-  place-content: center;
-}
-header {
-  background-color: rgb(43, 43, 43);
-  text-align: left;
-  padding-inline: 2%;
-  color: white;
-  height: 5vh;
-  font-size: 4vh;
-  width: 100%;
-}
-div {
-  width: 100vw;
-  align-content: flex-start;
-}
-.Content {
-  width: 100%;
-  font-size: 10vh;
-}
-input {
-  margin-bottom: 3vh;
-  height: 4vh;
-  font-size: 4vh;
-  min-height: 25px;
-  width: 40vw;
-  min-width: 100px;
-  align-items: center;
-}
-button {
-  height: auto;
-  width: auto;
-  font-size: 3vh;
-  margin-top: 3vh;
-}
-p {
-  margin-bottom: 30vh;
-}
-form {
-  height: 40vw;
-  width: 40vw;
-  align-self: center;
-  margin-left: 30vw;
+  margin: 0;
 }
