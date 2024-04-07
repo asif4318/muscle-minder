@@ -4,13 +4,10 @@ from datetime import date
 
 
 class ExcerciseMuscleLink(SQLModel, table=True):
-    muscle_id: Optional[int] = Field(
+    muscle_id: int | None = Field(
         default=None, foreign_key="muscle.id", primary_key=True)
-    excercise_id: Optional[int] = Field(
+    excercise_id: int | None = Field(
         default=None, foreign_key="excercise.id", primary_key=True)
-    
-    muscle: "Muscle" = Relationship(back_populates = "excercise_links")
-    excercise: "Excercise" = Relationship(back_populates = "muscle_links")
 
 
 class UserWorkoutLink(SQLModel, table=True):
@@ -18,33 +15,77 @@ class UserWorkoutLink(SQLModel, table=True):
         default=None, foreign_key="appuser.id", primary_key=True)
     workout_id: Optional[int] = Field(
         default=None, foreign_key="workout.id", primary_key=True)
-    
-    user: "AppUser" = Relationship(back_populates = "workout_links")
-    workout: "Workout" = Relationship(back_populates = "user_links")
-    
+    workout_date: Optional[date] = Field(default=date.today(), index = True)
 
-class Excercise(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
-    muscle_links: list[ExcerciseMuscleLink] = Relationship(
-        back_populates="excercise")
-    
-class Muscle(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
-    excercise_links: list[ExcerciseMuscleLink] = Relationship(
-        back_populates="muscle")
-
-class Workout(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
+class WorkoutExcerciseLink(SQLModel, table = True):
+    workout_id: Optional[int] = Field(
+        default=None, foreign_key="workout.id", primary_key=True)
+    excercise_id: Optional[int] = Field(
+        default=None, foreign_key="excercise.id", primary_key=True)
     reps: int = Field()
-    sets: int = Field()
-    workoutDate: date = Field()
-
-    user_links: list["UserWorkoutLink"] = Relationship(
-        back_populates="workout")
+    sets: int = Field() 
     
+    
+class ExcerciseBase(SQLModel):
+    name: str = Field(index=True)
+
+class Excercise(ExcerciseBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    muscles: list["Muscle"] = Relationship(back_populates="excercises", link_model=ExcerciseMuscleLink)
+    workouts: list["Workout"] = Relationship(back_populates="excercises", link_model=WorkoutExcerciseLink)
+    
+class MuscleBase(SQLModel):
+    name: str = Field(index=True)
+
+class Muscle(MuscleBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    excercises: list["Excercise"] = Relationship(
+        back_populates="muscles", link_model=ExcerciseMuscleLink)
+
+class MuscleRead(MuscleBase):
+    pass
+
+class MuscleCreate(MuscleBase):
+    pass
+
+class ExcerciseCreate(ExcerciseBase):
+    pass
+
+class ExcerciseRead(ExcerciseBase):
+    id: int
+
+class ExcerciseUpdate(SQLModel):
+    name: str | None = None
+    reps: int | None = None
+    sets: int | None = None
+    id: int | None = None
+
+class ExcerciseReadWithMuscle(ExcerciseRead):
+    muscles: list["MuscleRead"] = []
+    workouts: list["WorkoutRead"] = []
+
+class MuscleReadWithExcercise(MuscleRead):
+    excercises: list[ExcerciseRead] = []
+
+class WorkoutBase(SQLModel):
+    name: str = Field(index=True)
+
+class Workout(WorkoutBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    excercises: list["Excercise"] = Relationship(back_populates="workouts", link_model=WorkoutExcerciseLink)
+    users: list["AppUser"] = Relationship(
+        back_populates="workouts", link_model = UserWorkoutLink)
+
+class WorkoutRead(WorkoutBase):
+    pass
+
+class WorkoutReadWithRelationships(WorkoutRead):
+    excercises: list["ExcerciseRead"] = []
+    workouts: list["WorkoutRead"] = []
+
+class WorkoutCreate(WorkoutBase):
+    pass
+
 class AppUserBase(SQLModel):
     first_name: str = Field()
     last_name: str = Field()
@@ -53,8 +94,8 @@ class AppUserBase(SQLModel):
 
 class AppUser(AppUserBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    workout_links: list["UserWorkoutLink"] = Relationship(
-        back_populates="user")
+    workouts: list["Workout"] = Relationship(
+        back_populates="users", link_model = UserWorkoutLink)
 
 
 class AppUserCreate(AppUserBase):
