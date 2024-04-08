@@ -5,7 +5,7 @@ import uvicorn
 # One line of FastAPI imports here later 👈
 from fastapi import FastAPI
 from sqlmodel import SQLModel
-from routers import users, muscles, excercises, workouts
+from routers import users, muscles, excercises, workouts, testingMuscleSearch
 
 
 def create_db_and_tables():
@@ -18,6 +18,7 @@ app.include_router(users.router)
 app.include_router(muscles.router)
 app.include_router(workouts.router)
 app.include_router(excercises.router)
+app.include_router(testingMuscleSearch.router)
 
 
 @app.on_event("startup")
