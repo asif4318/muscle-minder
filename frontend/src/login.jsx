@@ -1,34 +1,54 @@
-import React from 'react'
+import {
+  Box,
+  Button,
+  Checkbox,
+  Container,
+  Divider,
+  FormControl,
+  FormLabel,
+  Heading,
+  HStack,
+  Input,
+  Link,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
+import { useEffect } from "react";
+import { auth } from "./firebase_config";
+import {
+  GoogleAuthProvider,
+  signInWithRedirect,
+  onAuthStateChanged,
+  signInWithPopup,
+  getRedirectResult,
+} from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
-const login = () => {
+const Login = () => {
+  const provider = new GoogleAuthProvider();
+  const navigate = useNavigate();
+
   return (
-    <form action = "login">
-        <input
-        autoFocus
-        id='username'
-        type='text'
-        placeholder='Username'
-        required
-        />
-        <input
-        id='password'
-        type='text'
-        placeholder='Password'
-        required
-        />
-        <button
-        type="submit"
-        
+    <Container
+      maxW="lg"
+      py={{ base: "12", md: "24" }}
+      px={{ base: "0", sm: "8" }}
+    >
+      <Stack spacing="8">
+        <Button
+          onClick={() =>
+            signInWithPopup(auth, provider).then((result) =>
+              getRedirectResult(auth).then((res) => {
+                navigate("dashboard");
+              })
+            )
+          }
         >
-            Log In
-       </button>
-       <button
-       type="button"
-       >
-            Sign Up
-      </button>
-    </form>
-  )
-}
+          Sign in with Google
+        </Button>
+      </Stack>
+    </Container>
+  );
+};
 
-export default login
+export default Login;
