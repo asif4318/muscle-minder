@@ -1,22 +1,26 @@
-from routers.models.muscle import Muscle
+from routers.models.tables import Muscle, MuscleCreate, MuscleReadWithExcercise
 from utilities import engine
 from sqlmodel import Session, select
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter(prefix="/muscles")
 
+def get_session():
+    with Session(engine) as session:
+        yield session
 
 @router.post("")
-def create_muscle(muscle: Muscle):
+def create_muscle(muscle: MuscleCreate):
     with Session(engine.engine) as session:
-        session.add(muscle)
+        db_muscle = Muscle.model_validate(muscle)
+        session.add(db_muscle)
         session.commit()
-        session.refresh(muscle)
-        return muscle
+        session.refresh(db_muscle)
+        return db_muscle
 
-
-@router.get("")
-def read_muscles():
-    with Session(engine.engine) as session:
-        muscles = session.exec(select(Muscle)).all()
-        return muscles
+@router.get("", response_model=MuscleReadWithExcercise)
+def read_excercise(*, session: Session = Depends(get_session), muscle_id = int):
+     muscle = session.get(Muscle, muscle_id)
+     if not muscle:
+         raise HTTPException(status_code=404, detail="Muscle not found")
+     return muscle
