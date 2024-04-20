@@ -2,13 +2,23 @@ from sqlmodel import Field, Relationship, SQLModel
 from typing import List, Optional
 from datetime import date
 
+# All of the tables used to store data in the backend, starts with linktables, each table is split into 
+# 5 classes, the base, the main table, a create table, an update table, and a read table
+# The read, create, and update tables tell the API what to expect, the base tables reduce 
+# repeat code
+
+# Table design:
+#                                 User
+#                                 Workout
+#                                 Excercise <--> Machine
+#                                 Muscle
+
 
 class ExcerciseMuscleLink(SQLModel, table=True):
     muscle_id: int | None = Field(
         default=None, foreign_key="muscle.id", primary_key=True)
     excercise_id: int | None = Field(
         default=None, foreign_key="excercise.id", primary_key=True)
-
 
 class UserWorkoutLink(SQLModel, table=True):
     user_id: Optional[int] = Field(
@@ -25,14 +35,24 @@ class WorkoutExcerciseLink(SQLModel, table = True):
     reps: int = Field()
     sets: int = Field() 
     
+class ExcerciseMachineLink(SQLModel, table = True):
+    excercise_id: Optional[int] = Field(
+        default=None, foreign_key = "excercise.id", primary_key=True)
+    machine_id: Optional[int] = Field(
+        default=None, foreign_key="machine.id", primary_key=True)
     
 class ExcerciseBase(SQLModel):
     name: str = Field(index=True)
+    reptime: int = Field()
 
 class Excercise(ExcerciseBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    muscles: list["Muscle"] = Relationship(back_populates="excercises", link_model=ExcerciseMuscleLink)
-    workouts: list["Workout"] = Relationship(back_populates="excercises", link_model=WorkoutExcerciseLink)
+    muscles: list["Muscle"] = Relationship(
+        back_populates="excercises", link_model=ExcerciseMuscleLink)
+    workouts: list["Workout"] = Relationship(
+        back_populates="excercises", link_model=WorkoutExcerciseLink)
+    machines: list["Machine"] = Relationship(
+        back_populates="excercises", link_model=ExcerciseMachineLink)
     
 class MuscleBase(SQLModel):
     name: str = Field(index=True)
@@ -69,15 +89,17 @@ class MuscleReadWithExcercise(MuscleRead):
 
 class WorkoutBase(SQLModel):
     name: str = Field(index=True)
+    time: int = Field(default=0,index=True)
 
 class Workout(WorkoutBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    excercises: list["Excercise"] = Relationship(back_populates="workouts", link_model=WorkoutExcerciseLink)
+    excercises: list["Excercise"] = Relationship(
+        back_populates="workouts", link_model=WorkoutExcerciseLink)
     users: list["AppUser"] = Relationship(
         back_populates="workouts", link_model = UserWorkoutLink)
 
 class WorkoutRead(WorkoutBase):
-    pass
+    id: Optional[int]
 
 class WorkoutReadWithRelationships(WorkoutRead):
     excercises: list["ExcerciseRead"] = []
@@ -104,3 +126,17 @@ class AppUserCreate(AppUserBase):
 
 class AppUserRead(AppUserBase):
     id: int
+
+class MachineBase(SQLModel):
+    name: str = Field()
+
+class Machine(MachineBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    excercises: list["Excercise"] = Relationship(
+        back_populates = "machines", link_model = ExcerciseMachineLink)
+    
+class MachineCreate(MachineBase):
+    pass
+
+class MachineRead(MachineBase):
+    name: str
