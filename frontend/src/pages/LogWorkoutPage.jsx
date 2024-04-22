@@ -32,12 +32,16 @@ import {
 } from "@chakra-ui/react";
 
 import { SearchIcon } from "@chakra-ui/icons";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const ExcercisesDummy = [
   { title: "crunches", muscles: ["rectus abdominus"] },
   { title: "bicep curls", muscles: ["biceps"] },
 ];
+
+const excerciseContext = React.createContext({
+  excercises: [], fetchExcercises: () => {}
+})
 
 const LogWorkoutPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -46,6 +50,23 @@ const LogWorkoutPage = () => {
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [reps, setReps] = useState(0);
   const [sets, setSets] = useState(0);
+  const [excercises, setExcercises] = useState([])
+  const fetchExcercises = async () => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const response = await fetch("http://localhost:8000/excercises", requestOptions);
+    const excercise = await response.json()
+    console.log(excercise)
+    setExcercises(excercise)
+    console.log(excercises)
+  }
+  useEffect(() => {
+    fetchExcercises()
+  }, [])
 
   return (
     <div>

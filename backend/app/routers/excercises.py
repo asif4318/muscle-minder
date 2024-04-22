@@ -31,11 +31,9 @@ def create_excercise(*, session: Session = Depends(get_session) , excercise: Exc
 #         excercises = session.exec(select(Excercise).offset(offset).limit(limit)).all()
 #         return excercises
 
-@router.get("", response_model=ExcerciseReadWithMuscle)
-def read_excercise(*, session: Session = Depends(get_session), excercise_id = int):
-     excercise = session.get(Excercise, excercise_id)
-     if not excercise:
-         raise HTTPException(status_code=404, detail="Excercise not found")
+@router.get("", response_model=list[ExcerciseReadWithMuscle])
+def read_excercise(*, session: Session = Depends(get_session)):
+     excercise = session.exec(select(Excercise)).all()
      return excercise
 
 @router.patch("", response_model=ExcerciseRead)

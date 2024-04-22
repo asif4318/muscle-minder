@@ -82,7 +82,6 @@ class ExcerciseUpdate(SQLModel):
 
 class ExcerciseReadWithMuscle(ExcerciseRead):
     muscles: list["MuscleRead"] = []
-    workouts: list["WorkoutRead"] = []
 
 class MuscleReadWithExcercise(MuscleRead):
     excercises: list[ExcerciseRead] = []
