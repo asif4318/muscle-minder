@@ -46,11 +46,12 @@ const excerciseContext = React.createContext({
 const LogWorkoutPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [pendingExercise, setPendingExercise] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [reps, setReps] = useState(0);
   const [sets, setSets] = useState(0);
-  const [excercises, setExcercises] = useState([])
+  const [excercises, setExcercises] = useState([]);
   const fetchExcercises = async () => {
     const requestOptions = {
       method: "GET",
@@ -58,11 +59,11 @@ const LogWorkoutPage = () => {
         "Content-Type": "application/json",
       },
     };
+    setIsLoading(true);
     const response = await fetch("http://localhost:8000/excercises", requestOptions);
     const excercise = await response.json()
-    console.log(excercise)
     setExcercises(excercise)
-    console.log(excercises)
+    setIsLoading(false);
   }
   useEffect(() => {
     fetchExcercises()
@@ -75,7 +76,7 @@ const LogWorkoutPage = () => {
           Log Workout
         </Heading>
         <Text textAlign={"left"}>
-          Selected Excercise: {selectedExercise ? selectedExercise.title : ""}
+          Selected Excercise: {selectedExercise ? selectedExercise.name : ""}
         </Text>
         <Container my="3%" textAlign={"center"} padding={"5px"}>
           <InputGroup>
@@ -89,12 +90,13 @@ const LogWorkoutPage = () => {
             <InputRightAddon>
               <SearchIcon />
             </InputRightAddon>
-          </InputGroup>
-          {ExcercisesDummy.filter((element) => {
-            let result = element.title.includes(searchTerm);
+          </InputGroup> 
+          <>
+          {(!isLoading) ? 
+            excercises.filter((element) => {
+            let result = element.name.includes(searchTerm);
             return result;
           }).map((element) => {
-            console.log(element);
             return (
               <Text
                 backgroundColor="lightgray"
@@ -103,10 +105,13 @@ const LogWorkoutPage = () => {
                   setSearchTerm(null);
                 }}
               >
-                {element.title}
+                {element.name}
               </Text>
             );
-          })}
+          })
+          : <div>Loading...</div>
+          }
+          </>
           <HStack my="3%">
             <Input
               placeholder={"Reps"}
@@ -161,7 +166,7 @@ const LogWorkoutPage = () => {
                 {pendingExercise.map((element) => {
                   return (
                     <Tr>
-                      <Td>{element.title}</Td>
+                      <Td>{element.name}</Td>
                       <Td isNumeric>{element.reps}</Td>
                       <Td isNumeric>{element.sets}</Td>
                       <Td isNumeric>{element.muscles.join(" ")}</Td>
