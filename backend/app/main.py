@@ -17,7 +17,7 @@ def create_db_and_tables():
 app = FastAPI()
 
 origins = [
-    "http://localhost:5173"
+    "http://localhost:5194"
 ]
 
 app.add_middleware(
@@ -33,14 +33,8 @@ app.include_router(workouts.router)
 app.include_router(excercises.router)
 app.include_router(testingMuscleSearch.router)
 app.include_router(challenges.router)
-<<<<<<< HEAD
 app.include_router(bodyweightfilter.router)
 app.include_router(machines.router)
-
-=======
-app.include_router(machines.router)
-app.include_router(bodyweightfilter.router)
->>>>>>> 45d37877e5c80895b4a675b9f77c89dad2e57c32
 
 
 @app.on_event("startup")

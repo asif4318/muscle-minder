@@ -112,8 +112,8 @@ class WorkoutCreateWithExcercises(WorkoutBase):
 
 class AppUserBase(SQLModel):
     first_name: str = Field()
-    last_name: str = Field()
-    date_of_birth: date = Field()
+    last_name: Optional[str] = Field(default="")
+    date_of_birth: Optional[date] = Field(default=date.today)
 
 
 class AppUser(AppUserBase, table=True):
