@@ -82,14 +82,13 @@ class ExcerciseUpdate(SQLModel):
 
 class ExcerciseReadWithMuscle(ExcerciseRead):
     muscles: list["MuscleRead"] = []
-    workouts: list["WorkoutRead"] = []
 
 class MuscleReadWithExcercise(MuscleRead):
     excercises: list[ExcerciseRead] = []
 
 class WorkoutBase(SQLModel):
     name: str = Field(index=True)
-    time: int = Field(default=0,index=True)
+    time: Optional[int] = Field(default=0)
 
 class Workout(WorkoutBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -99,7 +98,7 @@ class Workout(WorkoutBase, table=True):
         back_populates="workouts", link_model = UserWorkoutLink)
 
 class WorkoutRead(WorkoutBase):
-    id: Optional[int]
+    id: Optional[int] = None
 
 class WorkoutReadWithRelationships(WorkoutRead):
     excercises: list["ExcerciseRead"] = []
@@ -107,6 +106,9 @@ class WorkoutReadWithRelationships(WorkoutRead):
 
 class WorkoutCreate(WorkoutBase):
     pass
+
+class WorkoutCreateWithExcercises(WorkoutBase):
+    excercises: list["Excercise"] = []
 
 class AppUserBase(SQLModel):
     first_name: str = Field()
