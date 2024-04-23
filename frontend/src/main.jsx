@@ -5,7 +5,7 @@ import "./index.css";
 import { ChakraProvider, Grid, GridItem } from "@chakra-ui/react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
-import Login from "./Login.jsx";
+import Login from "./login.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import SideNavBar from "./components/SideNavBar.jsx";
 import RightBar from "./components/RightBar.jsx";

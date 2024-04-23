@@ -32,21 +32,73 @@ import {
 } from "@chakra-ui/react";
 
 import { SearchIcon } from "@chakra-ui/icons";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const ExcercisesDummy = [
   { title: "crunches", muscles: ["rectus abdominus"] },
   { title: "bicep curls", muscles: ["biceps"] },
 ];
 
+const excerciseContext = React.createContext({
+  excercises: [], fetchExcercises: () => {}
+})
+
 const LogWorkoutPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [pendingExercise, setPendingExercise] = useState([]);
+  const [pendingExercises, setPendingExercises] = useState([]);
+  const [isLoadingExcercises, setIsLoadingExcercises] = useState(true);
+  const [isLoadingWorkouts, setIsLoadingWorkouts] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [reps, setReps] = useState(0);
   const [sets, setSets] = useState(0);
+  const [allExcercises, setAllExcercises] = useState([]);
+  const [date, setDate] = useState([]);
+  const [workoutName, setWorkoutName] = useState("");
+  const [workoutTime, setWorkoutTime] = useState(0);
+  const fetchExcercises = async () => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    setIsLoadingExcercises(true);
+    const response = await fetch("http://localhost:8000/excercises", requestOptions);
+    const excercise = await response.json()
+    setAllExcercises(excercise)
+    setIsLoadingExcercises(false);
+  }
+  useEffect(() => {
+    fetchExcercises()
+  }, [])
+  const addWorkout = async() => {
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    body: JSON.stringify({name: workoutName}),
 
+  };
+  setIsLoadingWorkouts(true);
+  console.log(workoutName);
+  const response = await fetch("http://localhost:8000/workouts", requestOptions)
+  const data = await response.json()
+  setIsLoadingWorkouts(false);
+    for (let index = 0; index < pendingExercises.length; index++) {
+      const element = pendingExercises[index];
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({workout_id: data.id, excercise_id: element.id, reps: element.reps, sets: element.sets})
+      }
+      const response = await fetch("http://localhost:8000/excercises/workout-excercise-link", requestOptions)
+      const linkdata = await response.json()
+    }
+}
   return (
     <div>
       <VStack w={"100%"}>
@@ -54,7 +106,7 @@ const LogWorkoutPage = () => {
           Log Workout
         </Heading>
         <Text textAlign={"left"}>
-          Selected Excercise: {selectedExercise ? selectedExercise.title : ""}
+          Selected Excercise: {selectedExercise ? selectedExercise.name : ""}
         </Text>
         <Container my="3%" textAlign={"center"} padding={"5px"}>
           <InputGroup>
@@ -68,12 +120,15 @@ const LogWorkoutPage = () => {
             <InputRightAddon>
               <SearchIcon />
             </InputRightAddon>
-          </InputGroup>
-          {ExcercisesDummy.filter((element) => {
-            let result = element.title.includes(searchTerm);
+          </InputGroup> 
+          <>
+          
+          {//checks if Excercises was able to load before displaying the search options
+            (!isLoadingExcercises) ? 
+            allExcercises.filter((element) => {
+            let result = element.name.includes(searchTerm);
             return result;
           }).map((element) => {
-            console.log(element);
             return (
               <Text
                 backgroundColor="lightgray"
@@ -82,10 +137,13 @@ const LogWorkoutPage = () => {
                   setSearchTerm(null);
                 }}
               >
-                {element.title}
+                {element.name}
               </Text>
             );
-          })}
+          })
+          : <div>Loading...</div>
+          }
+          </>
           <HStack my="3%">
             <Input
               placeholder={"Reps"}
@@ -113,10 +171,14 @@ const LogWorkoutPage = () => {
               backgroundColor={"purple.400"}
               onClick={() => {
                 if (selectedExercise) {
-                  setPendingExercise([
-                    ...pendingExercise,
-                    { ...selectedExercise, sets: sets, reps: reps },
+                  setPendingExercises([
+                    ...pendingExercises,
+                    { ...selectedExercise, sets: sets, reps: reps, muscles: selectedExercise.muscles},
                   ]);
+                  console.log(selectedExercise.muscles);
+                  setSelectedExercise(null);
+                  setReps(0);
+                  setSets(0);
                 }
               }}
             >
@@ -137,13 +199,13 @@ const LogWorkoutPage = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {pendingExercise.map((element) => {
+                {pendingExercises.map((element) => {
                   return (
                     <Tr>
-                      <Td>{element.title}</Td>
+                      <Td>{element.name}</Td>
                       <Td isNumeric>{element.reps}</Td>
                       <Td isNumeric>{element.sets}</Td>
-                      <Td isNumeric>{element.muscles.join(" ")}</Td>
+                      <Td isNumeric>{element.muscles.map(muscle => muscle.name).join(" ")}</Td>
                     </Tr>
                   );
                 })}
@@ -151,11 +213,26 @@ const LogWorkoutPage = () => {
             </Table>
           </TableContainer>
           <Input placeholder={"Time"} type="datetime-local" mt={4}></Input>
-
+          <Input
+              type="text"
+              name="workoutName"
+              id="wn-1"
+              placeholder={"Workout Name"}
+              value = {workoutName}
+              onChange={(e) => setWorkoutName(e.target.value)}
+            />
           <Button
             textAlign={"center"}
             padding={"1rem"}
             backgroundColor={"lightgreen"}
+            onClick={() => {
+              addWorkout()
+              setSelectedExercise(null);
+              setPendingExercises([]);
+              setReps(0);
+              setSets(0);
+              setWorkoutName("");
+            }}
           >
             Log!
           </Button>
