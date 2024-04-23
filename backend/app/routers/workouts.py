@@ -1,4 +1,4 @@
-from routers.models.tables import Workout, WorkoutRead, WorkoutCreate, UserWorkoutLink
+from routers.models.tables import Workout, WorkoutRead, WorkoutCreate, UserWorkoutLink, WorkoutCreateWithExcercises
 from utilities import engine
 from sqlmodel import Session, select
 from fastapi import APIRouter, Depends, HTTPException
