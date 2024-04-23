@@ -18,9 +18,7 @@ def create_muscle(muscle: MuscleCreate):
         session.refresh(db_muscle)
         return db_muscle
 
-@router.get("", response_model=MuscleReadWithExcercise)
-def read_excercise(*, session: Session = Depends(get_session), muscle_id = int):
-     muscle = session.get(Muscle, muscle_id)
-     if not muscle:
-         raise HTTPException(status_code=404, detail="Muscle not found")
+@router.get("", response_model=list[Muscle])
+def read_excercise(*, session: Session = Depends(get_session)):
+     muscle = session.exec(select(Muscle)).all()
      return muscle
