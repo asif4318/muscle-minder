@@ -17,7 +17,8 @@ def create_db_and_tables():
 app = FastAPI()
 
 origins = [
-    "http://localhost:5194"
+    "http://localhost:5194",
+    "http://localhost:5173"
 ]
 
 app.add_middleware(

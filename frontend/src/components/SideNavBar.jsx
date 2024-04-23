@@ -20,7 +20,6 @@ const SideNavBar = () => {
           <Button width={"70%"}>
             <a href="/log">Log Workout</a>
           </Button>
-          <Button width={"70%"}>Profile</Button>
         </VStack>
         <a href="/">
           <Button

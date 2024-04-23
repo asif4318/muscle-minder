@@ -100,9 +100,8 @@ class Workout(WorkoutBase, table=True):
 class WorkoutRead(WorkoutBase):
     id: Optional[int] = None
 
-class WorkoutReadWithRelationships(WorkoutRead):
+class WorkoutReadWithExcercises(WorkoutRead):
     excercises: list["ExcerciseRead"] = []
-    workouts: list["WorkoutRead"] = []
 
 class WorkoutCreate(WorkoutBase):
     pass

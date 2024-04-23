@@ -34,28 +34,20 @@ import {
 import { SearchIcon } from "@chakra-ui/icons";
 import React, { useEffect, useState } from "react";
 
-const ExcercisesDummy = [
-  { title: "crunches", muscles: ["rectus abdominus"] },
-  { title: "bicep curls", muscles: ["biceps"] },
-];
-
-const excerciseContext = React.createContext({
-  excercises: [], fetchExcercises: () => {}
-})
-
 const LogWorkoutPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [pendingExercises, setPendingExercises] = useState([]);
   const [isLoadingExcercises, setIsLoadingExcercises] = useState(true);
-  const [isLoadingWorkouts, setIsLoadingWorkouts] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [reps, setReps] = useState(0);
   const [sets, setSets] = useState(0);
   const [allExcercises, setAllExcercises] = useState([]);
-  const [date, setDate] = useState([]);
   const [workoutName, setWorkoutName] = useState("");
-  const [workoutTime, setWorkoutTime] = useState(0);
+  const [workoutTime, setWorkoutTime] = useState("");
+  const [userWorkouts, setUserWorkouts] = useState([]);
+  const [userWorkoutLinks, setUserWorkoutLinks] = useState([]);
+  const user_id = localStorage.getItem("user_id");
   const fetchExcercises = async () => {
     const requestOptions = {
       method: "GET",
@@ -81,11 +73,8 @@ const LogWorkoutPage = () => {
     body: JSON.stringify({name: workoutName}),
 
   };
-  setIsLoadingWorkouts(true);
-  console.log(workoutName);
   const response = await fetch("http://localhost:8000/workouts", requestOptions)
   const data = await response.json()
-  setIsLoadingWorkouts(false);
     for (let index = 0; index < pendingExercises.length; index++) {
       const element = pendingExercises[index];
       const requestOptions = {
@@ -98,7 +87,53 @@ const LogWorkoutPage = () => {
       const response = await fetch("http://localhost:8000/excercises/workout-excercise-link", requestOptions)
       const linkdata = await response.json()
     }
-}
+    const workoutID = data.id;
+    const reqOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+        body: JSON.stringify({user_id: user_id, workout_id: workoutID, workout_date: workoutTime})
+    }
+    const linkResponse = await fetch("http://localhost:8000/workouts/user-workout-link", reqOptions)
+    const linkdata = await linkResponse.json();
+    fetchRecentWorkouts();
+    console.log(workoutTime);
+  }
+  const fetchRecentWorkouts = async () => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      },
+    };
+    const url = new URL("http://localhost:8000/workouts/recent-workouts");
+    url.searchParams.append("userid", user_id);
+  const response = await fetch(url, requestOptions)
+  const data = await response.json()
+  setUserWorkouts(data);
+  }
+  useEffect(()=> {
+    fetchRecentWorkouts()
+  }, [])
+  const fetchUserWorkoutLinks = async () => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      },
+    };
+    const url = new URL("http://localhost:8000/workouts/userid-workout-link");
+    url.searchParams.append("userid", user_id);
+    url.searchParams.append("userid", user_id);
+    const response = await fetch(url, requestOptions)
+    const data = await response.json()
+    setUserWorkoutLinks(data);
+  }
+  useEffect(()=> {
+    fetchUserWorkoutLinks()
+  }, [])
+
   return (
     <div>
       <VStack w={"100%"}>
@@ -148,20 +183,26 @@ const LogWorkoutPage = () => {
             <Input
               placeholder={"Reps"}
               type="number"
-              onChange={(e) => {
-                if (e.target.value) {
-                  setReps(parseInt(e.target.value, 10));
+              value = {reps ? reps: "Reps"}
+              onKeyPress={(e) => {
+                // Prevent 'e', '.', '+', '-' from being entered
+                if (['e', '.', '+', '-'].includes(e.key)) {
+                  e.preventDefault();
                 }
               }}
+              onChange={(e) => setReps(e.target.value)}
             ></Input>
             <Input
               placeholder={"Sets"}
               type="number"
-              onChange={(e) => {
-                if (e.target.value) {
-                  setSets(parseInt(e.target.value, 10));
+              value = {sets ? sets: "Sets"}
+              onKeyPress={(e) => {
+                // Prevent 'e', '.', '+', '-' from being entered
+                if (['e', '.', '+', '-'].includes(e.key)) {
+                  e.preventDefault();
                 }
               }}
+              onChange={(e) => setSets(e.target.value)}
             ></Input>
           </HStack>
           <VStack align={"center"} justify={"center"}>
@@ -177,7 +218,7 @@ const LogWorkoutPage = () => {
                   ]);
                   console.log(selectedExercise.muscles);
                   setSelectedExercise(null);
-                  setReps(0);
+                  setReps(null);
                   setSets(0);
                 }
               }}
@@ -212,7 +253,7 @@ const LogWorkoutPage = () => {
               </Tbody>
             </Table>
           </TableContainer>
-          <Input placeholder={"Time"} type="datetime-local" mt={4}></Input>
+          <Input placeholder={"Time"} type="date" mt={4} onChange={(e) => setWorkoutTime(e.target.value)}></Input>
           <Input
               type="text"
               name="workoutName"
@@ -240,6 +281,34 @@ const LogWorkoutPage = () => {
         <Box textAlign={"center"}>
           <Heading size={"xl"}>Recent Activity</Heading>
         </Box>
+        <TableContainer>
+            <Table variant="striped" colorScheme="purple">
+              <Thead>
+                <Tr>
+                  <Th>Workout</Th>
+                  <Th isNumeric>Date</Th>
+                  <Th isNumeric>Duration</Th>
+                  <Th>Exercises</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {userWorkouts.map((element) => {
+                  const workoutLink = userWorkoutLinks.find(link => 
+                  link.workout_id == element.id);
+                  const time = workoutLink ?
+                  workoutLink.workout_date : 4;
+                  return (
+                    <Tr>
+                      <Td>{element.name}</Td>
+                      <Td isNumeric>{time}</Td>
+                      <Td isNumeric>{element.time}</Td>
+                      <Td isNumeric>{element.excercises.map(excercise => excercise.name).join(", ")}</Td>
+                    </Tr>
+                  );
+                })}
+              </Tbody>
+            </Table>
+          </TableContainer>
       </VStack>
 
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -264,3 +333,4 @@ const LogWorkoutPage = () => {
 };
 
 export default LogWorkoutPage;
+
