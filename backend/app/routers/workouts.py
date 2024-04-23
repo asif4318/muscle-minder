@@ -1,7 +1,8 @@
-from routers.models.tables import Workout, WorkoutRead, WorkoutCreate, UserWorkoutLink, WorkoutCreateWithExcercises
+from routers.models.tables import Workout, WorkoutRead, WorkoutCreate, UserWorkoutLink, WorkoutCreateWithExcercises, AppUser, WorkoutReadWithExcercises
 from utilities import engine
 from sqlmodel import Session, select
 from fastapi import APIRouter, Depends, HTTPException
+from datetime import date, timedelta
 
 def get_session():
     with Session(engine) as session:
@@ -35,3 +36,17 @@ def create_user_workout_link(*, session: Session = Depends(get_session), link: U
 def read_user_workout_link(session: Session = Depends(get_session)):
     links = session.exec(select(UserWorkoutLink)).all()
     return links
+@router.get("/userid-workout-link", response_model=list[UserWorkoutLink])
+def read_user_workout_link(*, session: Session = Depends(get_session), userid: int):
+    links = session.exec(select(UserWorkoutLink).where(userid == UserWorkoutLink.user_id)).all()
+    return links
+@router.get("/recent-workouts", response_model=list[WorkoutReadWithExcercises])
+def read_recent_workouts(*, session: Session = Depends(get_session), userid: int):
+    delta = timedelta(days=7)
+    res: list[Workout] = []
+    links = session.exec(select(UserWorkoutLink).where(userid == UserWorkoutLink.user_id and date.today() >= UserWorkoutLink.workout_date >= date.today-delta)).all() #checks if the date the workout was logged was within the last 7 days
+    for link in links:
+        workout = session.exec(select(Workout).where(link.workout_id == Workout.id)).one()
+        res.append(workout)
+    return res
+

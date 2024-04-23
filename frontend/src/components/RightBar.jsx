@@ -31,6 +31,7 @@ const RightBar = () => {
       }
     });
   }, []);
+  
   const [userName, setUsername] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
 
