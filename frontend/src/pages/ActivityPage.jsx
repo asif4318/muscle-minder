@@ -74,7 +74,6 @@ const ActivityPage = () => {
       .then(response => response.json())
       .then(data => {
         const muscle_map = data.map(item => ({id: item.id, muscles: item.muscles}));
-        console.log(muscle_map);
         set_exercise_muscle_map(muscle_map);
       });
   }, [exercise_data]);
