@@ -40,14 +40,7 @@ const RightBar = () => {
       <Flex textAlign={"center"} align={"center"} gap={"10%"}>
         <Text>{userName}</Text>
         <Image src={profilePic} width={"10%"}></Image>
-        <IconButton aria-label="Notifications" icon={<BellIcon />} />
-        <IconButton aria-label="Settings" icon={<SettingsIcon />} />
       </Flex>
-      <VStack>
-        <Text>4012 Calories Burned</Text>
-        <Text>45 Minutes Exercised</Text>
-        <Text>My Goal</Text>
-      </VStack>
     </GridItem>
   );
 };

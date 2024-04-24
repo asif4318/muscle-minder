@@ -14,23 +14,21 @@ def get_session():
 router = APIRouter(prefix="/challenge")
 
 @router.get("", response_model=Workout)
-def challenge_exercises(*, session: Session = Depends(get_session), user_id = int):
-     user = session.get(AppUser, user_id)
-     if not user:
-         raise HTTPException(status_code=404, detail="User not found")
-     allWorkouts = session.exec(select(UserWorkoutLink).where(UserWorkoutLink.user_id == user.id)).all()
-     numWorkouts = 0
-     workoutIDs = []
-     for workoutlink in allWorkouts:
-        workoutIDs.append(workoutlink.workout_id)
-        numWorkouts += 1
-     if(numWorkouts == 0):
-         return []
-     if(numWorkouts <= 1):
-         return session.exec(select(Workout).where(Workout.id == workoutIDs[0])).one()
-     else:
-        randworkout = session.exec(select(Workout).where(Workout.id == workoutIDs[random.randint(0,numWorkouts-1)]))
-     return randworkout
+def challenge_exercises(*, session: Session = Depends(get_session), user_id: int):
+    user = session.get(AppUser, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    allWorkouts = session.exec(select(UserWorkoutLink).where(UserWorkoutLink.user_id == user.id)).all()
+    numWorkouts = len(allWorkouts)
+    if numWorkouts == 0:
+        return []
+    workoutIDs = [workoutlink.workout_id for workoutlink in allWorkouts]
+    if numWorkouts == 1:
+        workout = session.exec(select(Workout).where(Workout.id == workoutIDs[0])).one()
+    else:
+        workout = session.exec(select(Workout).where(Workout.id.in_(workoutIDs))).all()
+        workout = random.choice(workout)
+    return workout
 
 
 # """ Old - This would get all exercises done in the last week and then add a random exercise on top of it

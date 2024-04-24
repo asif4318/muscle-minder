@@ -32,6 +32,7 @@ const ActivityPage = () => {
       .then(response => response.json())
       .then(data => {
         const filtered_data = data.filter(item => String(item.user_id) === user_id); //Filter data so it only grabs workouts that the user's id is associated with
+        //console.log(filtered_data);
         set_user_data(filtered_data);
       });
   }, []);
@@ -56,6 +57,7 @@ const ActivityPage = () => {
         map[workout.id] = data.filter(exercise => exercise.workout_id === workout.id);
         return map;
       }, {});
+      ///console.log(exercise_map);
       set_exercise_data(exercise_map);
     });
   }, [workout_data]);
@@ -90,9 +92,10 @@ const ActivityPage = () => {
               <Th>Workout</Th>
               <Th>Exercises</Th>
               <Th>Muscles</Th>
+              <Th>Date</Th>
             </Tr>
           </Thead>
-          <Tbody>
+          <Tbody> 
           {workout_data.map((workout, index) => { //iterate through workout_data
             const exercises = exercise_data[workout.id] ? exercise_data[workout.id].map(exercise => exercise.excercise_id) : []; //get exercise data for the workout
             const display_exercises = exercises.length > 0 ? exercises.map(id => { 
@@ -103,15 +106,18 @@ const ActivityPage = () => {
               const muscle_names_obj = exercise_muscle_map.find(item => item.id === id); //different from exercises since exercises contain a list of their muscles, there is no 
               return muscle_names_obj ? muscle_names_obj.muscles.map(muscle => muscle.name) : []; //need to fetch the muscles name
             }))].join(', ') : 'No Muscles';
-          return (
-            <Tr key={index}>
+            const user_workout = user_data.find(item => item.workout_id === workout.id); //Compares the data in user_data to properly display the correct dates
+            const workout_date = user_workout ? user_workout.workout_date : 'No Date Recorded';
+            return (
+              <Tr key={index}>
                 <Td>{workout.name}</Td>
                 <Td>{display_exercises}</Td>
                 <Td>{display_muscles}</Td>
-            </Tr>
+                <Td>{workout_date}</Td>
+              </Tr>
             );
-           })}
-          </Tbody>
+          })}
+        </Tbody>
         </Table>
       </VStack>
     </Container>

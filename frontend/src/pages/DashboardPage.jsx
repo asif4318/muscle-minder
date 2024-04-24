@@ -5,6 +5,12 @@ import {
   Heading,
   Container,
   HStack,
+  Table,
+  Thead,
+  Tr,
+  Th,
+  Tbody,
+  Td,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -32,6 +38,10 @@ const DashboardPage = () => { //Much of these statements are copied from activit
   const [unexercised_muscles, set_unexercised_muscles] = useState([]);
   const [muscle_data, set_muscle_data] = useState([]); //NEW this gets all muscle ids
   const user_id = localStorage.getItem("user_id"); //Get the current user_id from local storage - David use this frequently
+  const [challenge_workout_id, set_challenge_workout_id] = useState([]);
+  const [challenge_workout_name, set_challenge_workout_name] = useState([]);
+  const [challenge_exercises, set_challenge_exercises] = useState([]);
+  const [challenge_exercises_name, set_challenge_exercises_name] = useState([]);
 
   useEffect(() => {
     fetch('http://localhost:8000/workouts/user-workout-link')
@@ -58,14 +68,14 @@ const DashboardPage = () => { //Much of these statements are copied from activit
   useEffect(() => {
     fetch('http://localhost:8000/excercises/workout-excercise-link') //Spelt wrong
     .then(response => response.json())
-    .then(data => {
-      const filtered_data = data.filter(link => workout_data.some(workout => workout.id === link.workout_id));
+    .then(data => { //had to be rewritten since now we need every exercise not paired to their respective workouts, just in a list
+      const filtered_data = data.filter(item => workout_data.some(workout => workout.id === item.workout_id));
       //console.log(filtered_data);
-      const all_exercises = filtered_data.reduce((arr, link) => { //reduce all exercises to one array
-        if (!arr.includes(link.excercise_id)) { //adds exercises not already in array (prevents duplicates0)
-          arr.push(link.excercise_id);
+      const all_exercises = filtered_data.reduce((exercise_list, item) => { //reduce all exercises to one array
+        if (!exercise_list.includes(item.excercise_id)) { //adds exercises not already in array (prevents duplicates0)
+          exercise_list.push(item.excercise_id);
         }
-        return arr;
+        return exercise_list;
       }, []);
       //console.log(all_exercises);
       set_exercise_data(all_exercises); // all_exercises is an array of all unique exercises across all workouts
@@ -101,16 +111,74 @@ const DashboardPage = () => { //Much of these statements are copied from activit
       set_unexercised_muscles(unexercised_muscles);
   }, [muscle_data, exercise_muscle_map]);
 
-  return (
-    <Container my={"1%"}>
-      <VStack space={12}>
-        <Heading textAlign={"center"}>Dashboard</Heading>
-        <Flex gap={"10%"}>
-          <StatsContainer text={unexercised_muscles.join(', ')} />
-        </Flex>
-      </VStack>
-    </Container>
-  );
+
+  //Challenges
+
+  useEffect(() => { //Creates a map of muscle ids as keys to their names as resultants
+    fetch('http://localhost:8000/challenge?user_id=' + user_id)
+    .then(response => response.json())
+    .then(data => {
+      const challenge_workout_id_get = data.id;
+      const challenge_workout_name_get = data.name;
+      set_challenge_workout_id(challenge_workout_id_get);
+      set_challenge_workout_name(challenge_workout_name_get);
+      //console.log(challenge_workout_id_get);
+      //console.log(challenge_workout_name_get);
+    });
+  }, []);
+
+  useEffect(() => {
+    fetch('http://localhost:8000/excercises/workout-excercise-link')
+      .then(response => response.json())
+      .then(data => { //filters and gets all exercises in the one workout challenge gave
+        const challenge_exercises_get = data.filter(exercise => exercise.workout_id === challenge_workout_id);
+        const challenge_exercise_ids = challenge_exercises_get.map(exercise => exercise.excercise_id); //again mispelled
+        set_challenge_exercises(challenge_exercise_ids)
+        //console.log(challenge_exercise_ids)
+      });
+  }, []);
+
+  useEffect(() => { //taken from inital exercise get but changed to use challenges to filter and to grab names instead of muscles
+    fetch('http://localhost:8000/excercises')
+      .then(response => response.json())
+      .then(data => { //gets all exercise names, same? as getting the muscle names
+        const filtered_exercises = data.filter(item => challenge_exercises.includes(item.id));
+        const challenge_exercise_names_get = filtered_exercises.reduce((exercise_array, item) => exercise_array.concat(item.name), []);
+        //console.log(challenge_exercise_names_get);
+        set_challenge_exercises_name(challenge_exercise_names_get);
+      });
+  }, [exercise_data]);
+
+
+
+  return ( //changed to use a box so the spacing looks better
+      <Container my={"1%"}>
+        <VStack>
+          <Heading textAlign={"center"}size="3xl">Welcome to Muscle Minder!</Heading>
+          <Box height="50px" />
+          <Heading textAlign={"center"} >Muscles not yet worked out:</Heading>
+          <Flex gap={"10%"}>
+            <StatsContainer text={unexercised_muscles.join(', ')} />
+          </Flex>
+          <Box height="50px" />
+          <Heading textAlign={"center"} >Challenge:</Heading>
+          <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th>Workout</Th>
+              <Th>Exercises</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            <Tr>
+              <Td>{challenge_workout_name.length > 0 ? challenge_workout_name : "No workouts"}</Td>
+              <Td>{challenge_exercises_name.length > 0 ? challenge_exercises_name.join(', ') : "No exercises"}</Td>
+            </Tr>
+          </Tbody>
+          </Table>
+        </VStack>
+      </Container>
+    );
 };
 
 export default DashboardPage;
