@@ -43,11 +43,29 @@ const DashboardPage = () => { //Much of these statements are copied from activit
   const [challenge_exercises, set_challenge_exercises] = useState([]);
   const [challenge_exercises_name, set_challenge_exercises_name] = useState([]);
 
+
+/*
   useEffect(() => {
     fetch('http://localhost:8000/workouts/user-workout-link')
       .then(response => response.json())
       .then(data => {
         const filtered_data = data.filter(item => String(item.user_id) === user_id); //Filter data so it only grabs workouts that the user's id is associated with
+        set_user_data(filtered_data);
+      });
+  }, []);
+  */
+
+  useEffect(() => {
+    const week = new Date();
+    week.setDate(week.getDate() - 7);
+    fetch('http://localhost:8000/workouts/user-workout-link')
+      .then(response => response.json())
+      .then(data => {
+        const filtered_data = data.filter(item => {//Filter data so it only grabs workouts that the user's id is associated with
+          const userMatch = String(item.user_id) === user_id;
+          const dateMatch = new Date(item.workout_date) >= week; //Only grabs from past week
+          return userMatch && dateMatch;
+        });
         set_user_data(filtered_data);
       });
   }, []);
@@ -156,7 +174,7 @@ const DashboardPage = () => { //Much of these statements are copied from activit
         <VStack>
           <Heading textAlign={"center"}size="3xl">Welcome to Muscle Minder!</Heading>
           <Box height="50px" />
-          <Heading textAlign={"center"} >Muscles not yet worked out:</Heading>
+          <Heading textAlign={"center"} >Muscles to work out:</Heading>
           <Flex gap={"10%"}>
             <StatsContainer text={unexercised_muscles.join(', ')} />
           </Flex>
